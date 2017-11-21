@@ -5,6 +5,10 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.rookieslab.api.Event;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 
 import java.io.IOException;
 import java.net.URL;
@@ -26,6 +30,16 @@ public class DummyEventRepository implements EventRepository {
 
     @Override
     public List<Event> findAll() {
+        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+
+        //HQL Named Query Example
+        Query query = session.getNamedQuery("findAllEvents");
+        List<Event> events = query.list();
+
+        session.getTransaction().commit();
+        session.close();
         return events;
     }
 
